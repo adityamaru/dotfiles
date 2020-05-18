@@ -62,11 +62,43 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git osx history safe-paste tmux vi-mode z zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git osx safe-paste tmux vi-mode z zsh-autosuggestions zsh-syntax-highlighting zsh-history-substring-search)
 
-# Auto suggestion configuration
+# Auto suggestion configuration using zsh-autosuggestions
 bindkey '^ ' autosuggest-accept
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bg=cyan,bold"
+
+# Substring search
+bindkey "^[[A" history-substring-search-up
+bindkey "^[[B" history-substring-search-down
+
+# Auto completion using compinit
+autoload -Uz compinit
+typeset -i updated_at=$(date +'%j' -r ~/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null)
+if [ $(date +'%j') != $updated_at ]; then
+  compinit -i
+else
+  compinit -C -i
+fi
+
+zmodload -i zsh/complist
+
+# Save history of zsh commands.
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=100000
+SAVEHIST=$HISTSIZE
+setopt hist_ignore_all_dups # remove older duplicate entries from history
+setopt hist_reduce_blanks # remove superfluous blanks from history items
+setopt inc_append_history # save history entries as soon as they are entered
+setopt share_history # share history between different instances of the shell
+
+# Auto cd into a directory by simply typing its name.
+# cd by typing directory name if it's not a command
+setopt auto_cd 
+
+# Autocorrect typos made when running wrong commands
+setopt correct_all
+
 
 
 source $ZSH/oh-my-zsh.sh
